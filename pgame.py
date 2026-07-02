@@ -22,14 +22,14 @@ def mainpage() -> None:
 
 def st_choice() -> None:
     print("Choose action:\n1. Work a job\n2. Eat at the restaurant [+5 energy -? coin]\n3. Pay today's inn bill [-2 coin]\n4.Sleep at the inn\n5. Visit the clinic \n6. Buy the house! [100 coins]\n7. Save game\n8. Load game")
-    action = input('Enter chosen action number[1,2,3,4]: ')
+    action = input('Enter chosen action number[1,2,3,4,5,6,7,8]: ')
     if(action == '1'):
         job()
     elif(action == '2'):
         eat()
-    elif(Player.action == '3'):
+    elif(player.action == '3'):
         innbill()
-    elif(Player.action == '4'):
+    elif(player.action == '4'):
         sleep()
     elif(action == '5'):
         clinic()
@@ -63,7 +63,7 @@ def clinic() -> None:
 
 def win_check() -> None:
     if(player.coin >= 100):
-        print('Congrats! You won!\nPlay again?')
+        print('Congrats! You won!')
         game_over()
     else:
         print('Not enough coins to pay the debt!')
@@ -133,7 +133,18 @@ def bar() -> None:
     print('--------------------------------------------------')
 
 
-
+def eat_check(cost:int) -> None:
+    if(player.coin < cost):
+        print("Not enough coins")
+    else:
+        if(player.sick == False):
+            print(f'You eat food [+5 energy -{cost} coin]')
+            player.energy += 5
+            player.coin -= cost
+        elif(player.sick == True):
+            print(f"You eat food but due to sickness you couldn't get as much energy [+3 energy -{cost} coin]")
+            player.energy += 3
+            player.coin -= cost
 
 
 def eat() -> None:
@@ -145,47 +156,20 @@ def eat() -> None:
             print("We got an overflow on food today! Cheap prices! Eat up! Only 1 coin a meal!")
             print('Eat food?\n1. Yes\n2. No')
             action = input('Enter chosen action number[1,2]: ')
-            if(action == '1' and player.coin < 1):
-                print("Not enough coins")
-            elif(action == '1' and player.coin >= 1):
-                if(player.sick == False):
-                    print('You eat food [+5 energy -1 coin]')
-                    player.energy += 5
-                    player.coin -= 1
-                elif(player.sick == True):
-                    print("You eat food but due to sickness you couldn't get as much energy [+3 energy -1 coin]")
-                    player.energy += 3
-                    player.coin -= 1
+            if(action == '1'):
+                eat_check(1)
         case 2:
             print("We got some decent food today. Come eat. It'll cost you 2 coin a meal today")
             print('Eat food?\n1. Yes\n2. No')
             action = input('Enter chosen action number[1,2]: ')
-            if(action == '1' and player.coin < 2):
-                print("Not enough coins")
-            elif(action == '1' and player.coin >= 2):
-                if(player.sick == False):
-                    print('You eat food [+5 energy -2 coin]')
-                    player.energy += 5
-                    player.coin -= 2
-                elif(player.sick == True):
-                    print("You eat food but due to sickness you couldn't get as much energy [+3 energy -1 coin]")
-                    player.energy += 3
-                    player.coin -= 2
+            if(action == '1'):
+                eat_check(2)
         case 3:
             print("We got a shortage of food today. You can eat but it'll cost you 3 coin a meal")
             print('Eat food?\n1. Yes\n2. No')
             action = input('Enter chosen action number[1,2]: ')
-            if(action == '1' and player.coin < 2):
-                print("Not enough coins")
-            elif(action == '1' and player.coin >= 2):
-                if(player.sick == False):
-                    print('You eat food [+5 energy -3 coin]')
-                    player.energy += 5
-                    player.coin -= 3
-                elif(player.sick == True):
-                    print("You eat food but due to sickness you couldn't get as much energy [+3 energy -1 coin]")
-                    player.energy += 3
-                    player.coin -= 3
+            if(action == '1'):
+                eat_check(3)
     print('--------------------------------------------------')
 
 
@@ -194,7 +178,7 @@ def innbill() -> None:
     if(player.coin < 2):
         print('Too little coin to pay rent')
     else:
-        print("You paid today's inn bill\n-2 coin")
+        print("You paid today's inn bill\n[-2 coin]")
         player.coin -= 2
         player.billpaid = True
     print('--------------------------------------------------')
@@ -205,7 +189,7 @@ def innbill() -> None:
 
 def sleep() -> None:
     if(player.billpaid == False):
-        print('You forgot to pay the bill today and was kicked out of the inn\nGAME OVER\n Would you like to play again?')
+        print('You forgot to pay the bill today and was kicked out of the inn\nGAME OVER')
         game_over()
 
     else:
@@ -220,7 +204,7 @@ def sleep() -> None:
             print('You found a dropped pouch of coins on your way home! [+5 coins]')
             player.coin += 5
         elif(61 <= event <= 80):
-            print('A theif robbed you of some coins! [-3 coins]')
+            print('A thief robbed you of some coins! [-3 coins]')
             if(player.coin >= 3):
                 player.coin -= 3
             else:
@@ -241,6 +225,7 @@ def sleep() -> None:
 
 
 def game_over() -> None:
+    print('Would you like to play again?')
     print('Choose action: \n1. Yes\n2. No')
     action = input('Enter chosen action number[1,2]: ')
     if(action == '1'):
@@ -251,7 +236,7 @@ def game_over() -> None:
         player.day = 0
         player.sick = False
         
-    elif(Player.action == '2'):
+    elif(player.action == '2'):
         quit()
     else:
         print('Invalid choice. Please choose again')
@@ -267,19 +252,22 @@ def save() -> None:
     print('--------------------------------------------------------------------------')
 
 def load() -> None:
-    with open("savefile.txt") as file:
-        for line in file:
-            line = line.strip()
-            fields = line.split(",")
-        
-        player.energy = int(fields[0])
-        player.coin = int(fields[1])
-        player.billpaid = (fields[2] == "True")
-        player.worked = (fields[3] == "True")
-        player.day = int(fields[4])
-        player.sick = (fields[5] == "True")
-    print("Your game has been loaded")
-    print(f"Day:{player.day}")
+    try:
+        with open("savefile.txt") as file:
+            for line in file:
+                line = line.strip()
+                fields = line.split(",")
+            
+            player.energy = int(fields[0])
+            player.coin = int(fields[1])
+            player.billpaid = (fields[2] == "True")
+            player.worked = (fields[3] == "True")
+            player.day = int(fields[4])
+            player.sick = (fields[5] == "True")
+        print("Your game has been loaded")
+        print(f"Day:{player.day}")
+    except FileNotFoundError:
+        print("No save file found")
     print('--------------------------------------------------------------------------')
 
 
@@ -292,5 +280,8 @@ print("You're a young man who have just come to the big city from the countrysid
 print('--------------------------------------------------------------------------')
 while(1):
     mainpage()
+    if(player.energy <= 0):
+        print("You ran out of energy and collapsed from overexhaustion\nGAME OVER")
+        game_over()
 
 
