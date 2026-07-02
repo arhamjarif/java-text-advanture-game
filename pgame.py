@@ -1,5 +1,4 @@
 import random
-#SICKNESS INCOMPLETE; only added bool and 5% chance to fall sick when sleep
 class Player:
     def __init__(self):
         self.energy = 10
@@ -28,9 +27,9 @@ def st_choice() -> None:
         job()
     elif(action == '2'):
         eat()
-    elif(action == '3'):
+    elif(Player.action == '3'):
         innbill()
-    elif(action == '4'):
+    elif(Player.action == '4'):
         sleep()
     elif(action == '5'):
         clinic()
@@ -252,7 +251,7 @@ def game_over() -> None:
         player.day = 0
         player.sick = False
         
-    elif(action == '2'):
+    elif(Player.action == '2'):
         quit()
     else:
         print('Invalid choice. Please choose again')
