@@ -7,6 +7,8 @@ class Player:
         self.worked = False
         self.day = 0
         self.sick = False
+        self.eaten = False
+        
 
 player = Player()
 
@@ -27,9 +29,9 @@ def st_choice() -> None:
         job()
     elif(action == '2'):
         eat()
-    elif(player.action == '3'):
+    elif(action == '3'):
         innbill()
-    elif(player.action == '4'):
+    elif(action == '4'):
         sleep()
     elif(action == '5'):
         clinic()
@@ -109,7 +111,7 @@ def Labour() -> None:
         print('Too low energy to work')
     else:
         if(player.worked == False):
-            print('You worked as a labourer [+8 coins -4 energy]')
+            print('You worked as a labourer [+8 coins -5 energy]')
             player.coin += 8
             player.energy -= 5
             player.worked = True
@@ -134,17 +136,20 @@ def bar() -> None:
 
 
 def eat_check(cost:int) -> None:
-    if(player.coin < cost):
-        print("Not enough coins")
+    if player.eaten == True:
+        print("You have already eaten today")
     else:
-        if(player.sick == False):
-            print(f'You eat food [+5 energy -{cost} coin]')
-            player.energy += 5
-            player.coin -= cost
-        elif(player.sick == True):
-            print(f"You eat food but due to sickness you couldn't get as much energy [+3 energy -{cost} coin]")
-            player.energy += 3
-            player.coin -= cost
+        if(player.coin < cost):
+            print("Not enough coins")
+        else:
+            if(player.sick == False):
+                print(f'You eat food [+5 energy -{cost} coin]')
+                player.energy += 5
+                player.coin -= cost
+            elif(player.sick == True):
+                print(f"You eat food but due to sickness you couldn't get as much energy [+3 energy -{cost} coin]")
+                player.energy += 3
+                player.coin -= cost
 
 
 def eat() -> None:
@@ -175,7 +180,7 @@ def eat() -> None:
 
 
 def innbill() -> None:
-    if(player.coin < 2):
+    if(player.coin < 2 and player.billpaid != True):
         print('Too little coin to pay rent')
     else:
         print("You paid today's inn bill\n[-2 coin]")
@@ -235,6 +240,7 @@ def game_over() -> None:
         player.worked = False
         player.day = 0
         player.sick = False
+        player.eaten = False
         
     elif(player.action == '2'):
         quit()
@@ -247,7 +253,7 @@ def game_over() -> None:
 
 def save() -> None:
     with open("savefile.txt", "wt") as file:
-        file.write(f"{player.energy},{player.coin},{player.billpaid},{player.worked},{player.day},{player.sick}")
+        file.write(f"{player.energy},{player.coin},{player.billpaid},{player.worked},{player.day},{player.sick},{player.eaten}")
     print("Your game has been saved")
     print('--------------------------------------------------------------------------')
 
@@ -264,6 +270,7 @@ def load() -> None:
             player.worked = (fields[3] == "True")
             player.day = int(fields[4])
             player.sick = (fields[5] == "True")
+            player.eaten = (fields[6] == "True")
         print("Your game has been loaded")
         print(f"Day:{player.day}")
     except FileNotFoundError:
